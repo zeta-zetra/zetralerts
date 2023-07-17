@@ -1,0 +1,6 @@
+admin/
+venv/
+__pycache__/
+History/
+zetralerts.log
+.env
