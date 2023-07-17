@@ -1,7 +1,13 @@
 import datetime
 import pandas as pd
+import logging
+
 from dotenv import dotenv_values
 from forexconnect import ForexConnect, fxcorepy
+
+
+logging.basicConfig(filename='zetralerts.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+
 
 date_format = '%Y-%m-%d %H:%M:%S'
 config      = dotenv_values(".env")
@@ -91,12 +97,12 @@ def get_data_from_fxcm(symbol: str, timeframe: str, from_date:str = "", to_date:
             
             
         except Exception as e:
-            print(f"FXCM ERROR: {e}")
+            logging.error(f"FXCM ERROR: {e}")
             df = pd.DataFrame()
         try:
             fx.logout()
         except Exception as e:
-            print(f"FXCM Logout ERROR: {e}")
+            logging.error(f"FXCM Logout ERROR: {e}")
             df = pd.DataFrame()
             
     return df 

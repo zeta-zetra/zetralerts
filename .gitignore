@@ -4,3 +4,4 @@ __pycache__/
 History/
 zetralerts.log
 .env
+keys/

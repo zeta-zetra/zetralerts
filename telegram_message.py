@@ -1,6 +1,10 @@
+import logging
 import requests 
 from dotenv import dotenv_values
 
+
+
+logging.basicConfig(filename='zetralerts.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 config = dotenv_values(".env")
 
@@ -27,10 +31,10 @@ def send_telegram_message(message:str, TOKEN:str = TOKEN, CHAT_ID:str = CHAT_ID)
     resp = requests.get(url).json() 
 
     if resp['ok']:
-        print("Message was sent successfully")
+        logging.info("Message was sent successfully")
         return True 
     else:
-        print("Message was not sent successfully")
+        logging.info("Message was not sent successfully")
         return False 
     
 
