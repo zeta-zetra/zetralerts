@@ -1,7 +1,6 @@
 import pandas as pd 
 import pandas_ta as ta 
 
-from sources.metatrader import get_data_from_mt5
 from sources.fxcm import get_data_from_fxcm
 
 def rsi(df: pd.DataFrame, period: int = 14) -> pd.DataFrame:
@@ -40,9 +39,7 @@ def fibonacci_lines(symbol: str, target_timeframe: str = "1d", bars: int=2, sour
     :return: (pd.DataFrame)
     """
     
-    if source == "MT5":
-         df = get_data_from_mt5(symbol=symbol, timeframe=target_timeframe, bars=bars, start_base=1)
-    else:
+    if source == "FXCM":
         df = get_data_from_fxcm(symbol, timeframe=target_timeframe, bars=bars)
     
     df["pp"] = (df["high"] + df["low"] + df["close"])/3

@@ -78,12 +78,13 @@ def _setup_new_instance():
         """
         Create the zetralert user
         """
+        del_user = c.run("sudo userdel -r zetralert")
         c.run("sudo adduser zetralert --disabled-password --home /var/zetralert --gecos ''")
         _create_zetralert_user()
         
         
         # Install packages
-        c.run("sudo apt-get install git build-essential python3-dev python3-venv python3 python3-pip python3.7-venv python3.7-dev libxml2-dev libxslt1-dev libffi-dev zlib1g-dev libssl-dev gettext libpq-dev libmariadb-dev libjpeg-dev libopenjp2-7-dev -y")
+        c.run("sudo apt-get install git build-essential python3-dev python3-venv python3 python3.7-venv  python3-pip libxml2-dev libxslt1-dev libffi-dev zlib1g-dev libssl-dev gettext libpq-dev libmariadb-dev libjpeg-dev libopenjp2-7-dev -y")
 
         """
         Install Python3.7
@@ -101,12 +102,12 @@ def _deploy_new_zetralert_instance():
     
     with Connection(
         HOST_NAME,
-        user=USER_NAME,
+        user=ROOT_USERNAME,
         connect_kwargs={"key_filename": path.join(PEM_KEY_DIR, PEM_KEY)}
     ) as c:
         
         # Make the virtual env directory
-        c.run("mkdir -p '/var/zetralert/venvs/' && exit")
+        # c.sudo("mkdir -p '/var/zetralert/venvs/' && exit", user='zetralert')
         
         
         # Get the latest stable version of Vibin-Pretix
@@ -116,12 +117,20 @@ def _deploy_new_zetralert_instance():
         
         # Create the virtual environment
         print("Create the virtual environment")
-        c.run("python3.7 -m venv /var/zetralert/venvs/venv && exit")
+        c.sudo("python3.7 -m venv /var/zetralert/venvs/venv && exit", user='zetralert')
         print("Virtual environment created")
         
         # Install requirments
-        print("Install the requirements")
-        c.run("source venvs/venv/bin/activate && cd zetralerts && pip3 install -r requirements.txt && exit") 
+        # print("Install the requirements")
+        pass_ = Responder(pattern=r'zetralert',response="cd zetralerts && pip3 install -r requirements.txt && exit")
+        c.run("sudo su - zetralert", pty=True, watchers=[pass_])
+        # c.run("sudo su - zetralert && source venvs/venv/bin/activate && cd zetralerts && pip3 install -r requirements.txt && exit") 
+        
+        # Create the .env file
+        print("Uploading the .env file...")
+        c.put(path.join(getcwd(),"conf",".env"), ".env")
+        c.run("sudo mv .env /var/zetralert/zetralerts/.env && exit")
+                
         
         print("==== DEPLOY COMPLETE =====")  
         
@@ -131,11 +140,11 @@ def _start_zetralert():
     
     with Connection(
         HOST_NAME,
-        user=USER_NAME,
+        user=ROOT_USERNAME,
         connect_kwargs={"key_filename": path.join(PEM_KEY_DIR, PEM_KEY)}
     ) as c:
         
-         c.run("source /var/zetralert/venvs/venv/bin/activate && cd /var/zetralert/zetralerts && " + "nohup python3.7 main.py & " + " && exit")
+         c.sudo("source /var/zetralert/venvs/venv/bin/activate && cd /var/zetralert/zetralerts && " + "nohup python3.7 main.py & " + " && exit", user='zetralert')
          print("Zetralerts has been started...")
     
 def _stop_zetralert():
@@ -150,13 +159,13 @@ def _stop_zetralert():
     
     
 @task
-def deploy_start_zetralerts():
+def deploy_start_zetralerts(ctx):
     """
-    Deploy and start a new instanc of Zetralerts
+    Deploy and start a new instance of Zetralerts
     """
     
-    _setup_new_instance()
+    # _setup_new_instance()
     
     _deploy_new_zetralert_instance()
     
-    _start_zetralert()
+    # _start_zetralert()
