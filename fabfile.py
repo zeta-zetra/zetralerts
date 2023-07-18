@@ -39,7 +39,6 @@ def _create_zetralert_user():
         """
         Create the zetralert user
         """
-        #c.run("sudo adduser zetralert --disabled-password --home /var/zetralert --gecos ''")       
 
         c.sudo("mkdir -p /var/zetralert/.ssh", user='zetralert')
 
@@ -84,7 +83,7 @@ def _setup_new_instance():
         
         
         # Install packages
-        c.run("sudo apt-get install git build-essential python3-dev python3-venv python3 python3.7-venv  python3-pip libxml2-dev libxslt1-dev libffi-dev zlib1g-dev libssl-dev gettext libpq-dev libmariadb-dev libjpeg-dev libopenjp2-7-dev -y")
+        c.run("sudo apt-get install git build-essential wget python3-dev python3-venv python3  python3-pip libxml2-dev libxslt1-dev libffi-dev zlib1g-dev libssl-dev gettext libpq-dev libmariadb-dev libjpeg-dev libopenjp2-7-dev -y")
 
         """
         Install Python3.7
@@ -93,6 +92,7 @@ def _setup_new_instance():
         c.run("sudo add-apt-repository ppa:deadsnakes/ppa -y")
 
         c.run("sudo apt install python3.7 -y")
+        c.run("sudo apt-get install python3.7-venv")
         
         print("==== SETUP COMPLETE =====")  
         
@@ -107,8 +107,8 @@ def _deploy_new_zetralert_instance():
     ) as c:
         
         # Make the virtual env directory
-        # c.sudo("mkdir -p '/var/zetralert/venvs/' && exit", user='zetralert')
-        
+        c.sudo("mkdir -p '/var/zetralert/venvs/' && exit", user='zetralert')
+        c.sudo("chmod -R 777 /var/zetralert/venvs/", user='zetralert') 
         
         # Get the latest stable version of Vibin-Pretix
         print("Clone the Zetralert repo")
@@ -120,11 +120,10 @@ def _deploy_new_zetralert_instance():
         c.sudo("python3.7 -m venv /var/zetralert/venvs/venv && exit", user='zetralert')
         print("Virtual environment created")
         
+        
         # Install requirments
-        # print("Install the requirements")
-        pass_ = Responder(pattern=r'zetralert',response="cd zetralerts && pip3 install -r requirements.txt && exit")
-        c.run("sudo su - zetralert", pty=True, watchers=[pass_])
-        # c.run("sudo su - zetralert && source venvs/venv/bin/activate && cd zetralerts && pip3 install -r requirements.txt && exit") 
+        print("Install the requirements")
+        c.sudo("/var/zetralert/venvs/venv/bin/pip3 install -r /var/zetralert/zetralerts/requirements.txt && exit", user='zetralert') 
         
         # Create the .env file
         print("Uploading the .env file...")
@@ -134,8 +133,9 @@ def _deploy_new_zetralert_instance():
         
         print("==== DEPLOY COMPLETE =====")  
         
-        
-def _start_zetralert():
+    
+@task    
+def start_zetralert(ctx):
     """ Start Zetralert """
     
     with Connection(
@@ -144,10 +144,11 @@ def _start_zetralert():
         connect_kwargs={"key_filename": path.join(PEM_KEY_DIR, PEM_KEY)}
     ) as c:
         
-         c.sudo("source /var/zetralert/venvs/venv/bin/activate && cd /var/zetralert/zetralerts && " + "nohup python3.7 main.py & " + " && exit", user='zetralert')
+         c.sudo("nohup /var/zetralert/venvs/venv/bin/python3.7 /var/zetralert/zetralerts/main.py & " + " && exit", user='zetralert')
          print("Zetralerts has been started...")
     
-def _stop_zetralert():
+@task
+def stop_zetralert(ctx):
     """ Stop Zetralert """
     
     with Connection(
@@ -155,17 +156,48 @@ def _stop_zetralert():
         user=USER_NAME,
         connect_kwargs={"key_filename": path.join(PEM_KEY_DIR, PEM_KEY)}
     ) as c:
-        pass 
+        
+        r.run("kill -9 `pgrep -f nohup` &")
+
+
+@task
+def install_talib(ctx):
+    """ Install TA-LIB """    
     
+    with Connection(
+        HOST_NAME,
+        user=ROOT_USERNAME,
+        connect_kwargs={"key_filename": path.join(PEM_KEY_DIR, PEM_KEY)}
+    ) as c:
+         
+         print("==== Installing TALIB ======")
+         
+         # Get the talib tar file
+         c.run("sudo wget https://artiya4u.keybase.pub/TA-lib/ta-lib-0.4.0-src.tar.gz")
+            
+         # Unzip
+         c.run("sudo tar -xvf ta-lib-0.4.0-src.tar.gz")
+         
+         # Configure
+         c.run("cd ta-lib/ && ./configure --prefix=/usr")
+         
+         # make 
+         c.run("cd ta-lib/ && make")
+         
+         # make install
+         c.run("cd ta-lib/ && install")
+         
+         print("==== Installation of TALIB COMPLETE ======")
     
 @task
-def deploy_start_zetralerts(ctx):
+def deploy_zetralerts(ctx):
     """
-    Deploy and start a new instance of Zetralerts
+    Setup and deploy a new instance of Zetralerts
     """
     
-    # _setup_new_instance()
+    _setup_new_instance()
     
     _deploy_new_zetralert_instance()
     
-    # _start_zetralert()
+    
+    
