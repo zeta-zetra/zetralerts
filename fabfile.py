@@ -144,7 +144,7 @@ def test_zetralert(ctx):
         connect_kwargs={"key_filename": path.join(PEM_KEY_DIR, PEM_KEY)}
     ) as c:
         
-        c.sudo("/var/zetralert/venvs/venv/bin/python3.7 /var/zetralert/zetralerts/test_zetralert.py & " + " && exit", user='zetralert')
+        c.sudo("/var/zetralert/venvs/venv/bin/python3.7 /var/zetralert/zetralerts/test_zetralert.py" + " && exit", user='zetralert')
 
 
 @task    
