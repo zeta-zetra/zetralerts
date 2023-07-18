@@ -1,6 +1,8 @@
 import datetime
-import pandas as pd
 import logging
+import os 
+import pandas as pd
+
 
 from dotenv import dotenv_values
 from forexconnect import ForexConnect, fxcorepy
@@ -10,7 +12,7 @@ logging.basicConfig(filename='zetralerts.log', filemode='w', format='%(asctime)s
 
 
 date_format = '%Y-%m-%d %H:%M:%S'
-config      = dotenv_values(".env")
+config      = dotenv_values(os.path.join(os.path.abspath(''),".env"))
 
 USER_ID  = config["FXCM_USER_ID"]
 PWD      = config["FXCM_PWD"]

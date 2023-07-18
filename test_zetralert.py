@@ -1,6 +1,7 @@
 import chime
 import datetime
 import logging
+import os
 import schedule
 import time
 
@@ -12,7 +13,7 @@ from indicators import rsi, fibonacci_lines
 from telegram_message import send_telegram_message
 
 
-config = dotenv_values(".env")
+config = dotenv_values(os.path.join(os.path.abspath(''),".env"))
 
 LIVE   =config["LIVE"]
 

@@ -1,4 +1,5 @@
 import logging
+import os 
 import requests 
 from dotenv import dotenv_values
 
@@ -6,7 +7,7 @@ from dotenv import dotenv_values
 
 logging.basicConfig(filename='zetralerts.log', filemode='w', format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-config = dotenv_values(".env")
+config = dotenv_values(os.path.join(os.path.abspath(''),".env"))
 
 TOKEN  =config["TELEGRAM_TOKEN"]
 CHAT_ID=config["TELEGRAM_CHAT_ID"]
