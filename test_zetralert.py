@@ -1,3 +1,15 @@
+"""
+This file is meant to run deployment tests to see if the deployment was successful.
+
+Examples:
+1. Send a message to your Telegram Bot
+2. Request Data from your broker
+3. Run a trigger
+etc, etc.
+
+Date: 2023-07-18 
+
+"""
 import chime
 import datetime
 import logging
@@ -45,9 +57,10 @@ def check_trigger():
     print("Just checked trigger")
     
 if __name__ == "__main__":
-    
+    print("Starting the test for Zetralerts...")
     fibo = fibonacci_lines("EURUSD","15min")
     schedule.every(10).seconds.do(check_trigger)
+    print("Scheduling a run every 10 seconds...")
 
     while True:
         schedule.run_pending()
