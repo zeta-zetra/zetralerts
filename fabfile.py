@@ -133,7 +133,20 @@ def _deploy_new_zetralert_instance():
         
         print("==== DEPLOY COMPLETE =====")  
         
-    
+
+
+@task
+def test_zetralert(ctx):
+    """Run a simple test """
+    with Connection(
+        HOST_NAME,
+        user=ROOT_USERNAME,
+        connect_kwargs={"key_filename": path.join(PEM_KEY_DIR, PEM_KEY)}
+    ) as c:
+        
+        c.sudo("/var/zetralert/venvs/venv/bin/python3.7 /var/zetralert/zetralerts/test_zetralert.py & " + " && exit", user='zetralert')
+
+
 @task    
 def start_zetralert(ctx):
     """ Start Zetralert """
@@ -157,7 +170,8 @@ def stop_zetralert(ctx):
         connect_kwargs={"key_filename": path.join(PEM_KEY_DIR, PEM_KEY)}
     ) as c:
         
-        r.run("kill -9 `pgrep -f nohup` &")
+        c.run("kill -9 `pgrep -f nohup` &")
+        c.run("kill -9 `pgrep -f python3` &")
 
 
 @task
