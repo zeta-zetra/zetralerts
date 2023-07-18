@@ -12,7 +12,10 @@ logging.basicConfig(filename='zetralerts.log', filemode='w', format='%(asctime)s
 
 
 date_format = '%Y-%m-%d %H:%M:%S'
-config      = dotenv_values(os.path.join(os.path.abspath(''),".env"))
+if "/home/ubuntu" == os.path.abspath(''):
+    config = dotenv_values(os.path.join("/var/zetralert/zetralerts/",".env"))
+else:
+    config = dotenv_values(os.path.join(os.path.abspath(''),".env"))
 
 USER_ID  = config["FXCM_USER_ID"]
 PWD      = config["FXCM_PWD"]

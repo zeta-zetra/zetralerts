@@ -20,7 +20,10 @@ from indicators import rsi, fibonacci_lines
 from telegram_message import send_telegram_message
 
 
-config = dotenv_values(os.path.join(os.path.abspath(''),".env"))
+if "/home/ubuntu" == os.path.abspath(''):
+    config = dotenv_values(os.path.join("/var/zetralert/zetralerts/",".env"))
+else:
+    config = dotenv_values(os.path.join(os.path.abspath(''),".env"))
 
 LIVE   =config["LIVE"]
 
