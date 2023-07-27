@@ -23,7 +23,6 @@ ROOT_USERNAME    = environ.get("HOST_USERNAME")
 USER_NAME        = environ.get("USERNAME")
 GIT_ZETRALERT_URL = environ.get("GIT_ZETRALERT_URL")
 
-print(path.join(PEM_KEY_DIR,PEM_KEY))
 
 
 def _create_zetralert_user():
@@ -77,7 +76,11 @@ def _setup_new_instance():
         """
         Create the zetralert user
         """
-        del_user = c.run("sudo userdel -r zetralert")
+        try:
+            del_user = c.run("sudo userdel -r zetralert")
+        except Exception as e:
+            print(f"Deleting a user error: {e}")
+            
         c.run("sudo adduser zetralert --disabled-password --home /var/zetralert --gecos ''")
         _create_zetralert_user()
         
@@ -173,6 +176,19 @@ def stop_zetralert(ctx):
         c.run("kill -9 `pgrep -f nohup` &")
         c.run("kill -9 `pgrep -f python3` &")
 
+
+@task
+def run_zetralert_test(ctx):
+    """ Run test(s) to check if application works """
+    
+    with Connection(
+        HOST_NAME,
+        user=ROOT_USERNAME,
+        connect_kwargs={"key_filename": path.join(PEM_KEY_DIR, PEM_KEY)}
+    ) as c:
+        
+         c.sudo("nohup /var/zetralert/venvs/venv/bin/python3.7 /var/zetralert/zetralerts/run_test.py & " + " && exit", user='zetralert')
+        #  print("Zetralerts has been started...")    
 
 @task
 def install_talib(ctx):

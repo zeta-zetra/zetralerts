@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;800&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Poppins', sans-serif; 
+}
+
+#MainMenu {
+    display: none;
+}
+
+a.e1g8pov62{
+    display: none;
+}
+
+footer.css-17es36v.e1g8pov61{
+    color: #f4f4f4;
+}
+
+footer:after {
+    content: "Zetralerts";
+    color: black;
+    display: block;
+    position: relative;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+div.eqr7zpz1, div.eqr7zpz4 {
+    justify-content: center;
+    text-align: center;
+}
+
+div.eqr7zpz1 {
+    margin-top: 3.2rem;
+}
+
+.activate, .e1ewe7hr5{
+    background-color: #47595D;
+    color: #f4f4f4;
+    border: 1px solid transparent;
+    font-weight: 800;
+    border-radius: .25rem;
+    text-align: center;
+	padding: .375rem .75rem;
+	font-size: 1.1rem;
+	line-height: 1.5;
+
+}
+
+input[text] {
+    background-color: #D3DCD9;
+}
