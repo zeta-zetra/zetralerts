@@ -5,29 +5,19 @@ Date   : 2023-07-26
 Author : Zetra 
 """
 
-
-
 import chime 
+import logging
 
 # Own modules
 from sources.fxcm import get_data_from_fxcm
 from indicators import fibonacci_lines
-from telegram_message import send_telegram_message
+from alerts.utils import trigger_message
 
 # Set the sound notification for local development
 chime.theme("zelda")
 
 
-def trigger_message(message: str) -> bool:
-    """
-    Trigger message based on the rules being satisfied
-    
-    """
 
-    logging.info(message)
-    send_telegram_message(message)
-    
-    return True
 
 def fibonacci_breakout(symbol: str, timeframe: str,  **kwargs) -> bool:
     """
@@ -55,8 +45,9 @@ def fibonacci_breakout(symbol: str, timeframe: str,  **kwargs) -> bool:
          msg_resp = trigger_message("Close is less than S2 of the Fibonacci Line")
 
         
-    if msg_resp and not LIVE:
-        chime.success(sync=True)
+    if msg_resp:
+        if not LIVE:
+            chime.success(sync=True)
         return True 
         
     return False

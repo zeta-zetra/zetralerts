@@ -16,6 +16,7 @@ from dotenv import dotenv_values
 
 # Own modules
 from alerts.fibonacci import fibonacci_breakout
+from alerts.chart_patterns import alerts_chart_patterns
 
 # Grab the .env file according to OS 
 if "/home/ubuntu" == os.path.abspath(''):
@@ -35,10 +36,16 @@ def check_trigger():
     Check any of the below have been triggered
     """
 
-    resp = fibonacci_breakout("EURUSD", "15min", LIVE=LIVE)
-    if not resp:
-        logging.info("Just checked trigger and no alert.")
+    # All the alerts 
+    funcs = [fibonacci_breakout, alerts_chart_patterns]
     
+    for fn in funcs:
+        resp = fn("EURUSD", "15min", LIVE=LIVE)
+
+        if not resp:
+            logging.info("Just checked trigger and no alert.")
+            
+       
 if __name__ == "__main__":
     
     schedule.every(ALERT).minute.do(check_trigger)
