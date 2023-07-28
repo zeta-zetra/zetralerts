@@ -13,7 +13,7 @@ import time
 from pathlib import Path
 from streamlit_option_menu import option_menu
 
-st.set_page_config(page_title="Zetralerts", page_icon=":alarm_clock:", layout="wide")
+st.set_page_config(page_title="Zetralerts", page_icon="frontend/static/favicon.ico", layout="wide")
 
 if "visibility" not in st.session_state:
     st.session_state.visibility = "visible"
