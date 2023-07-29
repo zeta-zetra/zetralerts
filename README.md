@@ -4,6 +4,22 @@ The objective of Zetralerts is to receive timely notifications whenever high pro
 
 *Zetralerts is under heavy development*. See the disclaimer below. 
 
+Table of Contents
+=================
+
+ * [Getting started](#getting-started) 
+    * [Installation](#installation)
+    * [Create the .env file](#create-the-env-file)
+    * [Setting up Telegram Bot](#setting-up-telegram-bot)
+    * [Run Test](#run-test)
+ * [Available Alerts](#available-alerts)
+ * [Custom Alerts](#custom-alerts)
+ * [Frontend](#frontend)
+ * [Deployment](#deployment)
+ * [Disclaimer](#disclaimer)
+ * [License](#license)
+ * [Contact](#contact)
+
 ## Getting started
 
 Lets help you get started working locally with Zetralerts. 
@@ -31,7 +47,7 @@ Follow these steps to setup your Telegram bot:
 
  4. Copy your Token API 
  
-You can follow the steps in the [article](https://www.freecodecamp.org/news/how-to-create-a-telegram-bot-using-python/) to get started as well.
+You can follow the steps in this [article](https://www.freecodecamp.org/news/how-to-create-a-telegram-bot-using-python/) to get started as well.
 
 ### Run Test
 
