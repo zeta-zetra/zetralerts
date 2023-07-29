@@ -9,7 +9,7 @@ Date  : 2023-07-21
 
 # Own modules
 from sources.fxcm import get_data_from_fxcm
-from telegram_message import send_telegram_message
+from telegram_message import send_telegram_message, get_telegram_chat_id
 
 
 
@@ -42,6 +42,7 @@ def send_ohlc_prices(broker: str = "FXCM", symbol: str = "EURUSD"):
     """
     
     if broker == "FXCM":
+        print(f"Getting the EURUSD close on the 15min from FXCM...")
         ohlc    = get_data_from_fxcm("EURUSD", "15min", bars=1)
         close   = ohlc.close[0]
         message = f"The EURUSD close price at the 15min timeframe is {close}"
@@ -51,7 +52,12 @@ def send_ohlc_prices(broker: str = "FXCM", symbol: str = "EURUSD"):
 def run_test():
     """ Run test """
         
-    send_ohlc_prices()
+    resp = get_telegram_chat_id()
+    
+    if resp["error"] == 0:
+        send_ohlc_prices()
+    else:
+        print(resp["msg"])
         
 if __name__ == "__main__":
     run_test()

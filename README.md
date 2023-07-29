@@ -51,7 +51,7 @@ You can follow the steps in this [article](https://www.freecodecamp.org/news/how
 
 ### Run Test
 
-Once you have your Telegram API token, in the .env file place it the TELEGRAM_TOKEN environment variable. 
+Once you have your Telegram API token, in the .env file place it the TELEGRAM_TOKEN environment variable. Leave the TELEGRAM_CHAT_ID variable blank.
 
 In your bot, write anything. e.g: `Hello`, `Test`. This will be needed when Zetralerts attempts to get the Chat ID. 
 

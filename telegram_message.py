@@ -17,8 +17,9 @@ else:
     config      = dotenv_values(os.path.join(os.path.abspath(''),".env"))
     dotenv_path = os.path.join(os.path.abspath(''),".env")
 
-TOKEN  =config["TELEGRAM_TOKEN"]
-CHAT_ID=config["TELEGRAM_CHAT_ID"]
+TOKEN  = config["TELEGRAM_TOKEN"]
+CHAT_ID= int(config["TELEGRAM_CHAT_ID"])
+
 
 
 def get_telegram_chat_id() -> Dict[str, Union[int, str]]:
@@ -28,30 +29,34 @@ def get_telegram_chat_id() -> Dict[str, Union[int, str]]:
     
     :return: (Dict[str, Union[int, str]])
     """
-    req      = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
-    response = requests.get(req)
-    result   = response.json()
     
-    if result["ok"]:
-        if len(result["result"]) > 0:
-            default_chat_id = result["result"][0]["message"]["chat"]["id"]
-            
-            # Set the chat id in the env file 
-            dotenv.set_key(dotenv_path, "TELEGRAM_CHAT_ID", default_chat_id, quote_mode='never')
-            
-            # Send message to the bot 
-            text_msg        = send_telegram_message("We are good to go!", TOKEN, default_chat_id)
-            
-            if text_msg:
-                return json.dumps({"error":0,"chat_id": default_chat_id})
+    if not CHAT_ID:
+        req      = f"https://api.telegram.org/bot{TOKEN}/getUpdates"
+        response = requests.get(req)
+        result   = response.json()
+        
+        if result["ok"]:
+            if len(result["result"]) > 0:
+                default_chat_id = result["result"][0]["message"]["chat"]["id"]
+                
+                # Set the chat id in the env file 
+                dotenv.set_key(dotenv_path, "TELEGRAM_CHAT_ID", default_chat_id, quote_mode='never')
+                
+                # Send message to the bot 
+                text_msg        = send_telegram_message("We are good to go!", TOKEN, default_chat_id)
+                
+                if text_msg:
+                    return {"error":0,"chat_id": default_chat_id}
+                else:
+                    return {"error":1,"msg":"Please try again." }
             else:
-                return json.dumps({"error":1,"msg":"Please try again." })
+                    return {"error":2,"msg": "Send any message to your bot"}
         else:
-                return json.dumps({"error":2,"msg": "Send any message to your bot"})    
+            return {"error":2,"msg": "Please check your API Token. We couldn't reach your bot"}  
     else:
-        return json.dumps({"error":2,"msg": "Please check your API Token. We couldn't reach your bot"})   
+        return {"error":0,"chat_id": CHAT_ID}
     
-    return result 
+ 
 
 def send_telegram_message(message:str, TOKEN:str = TOKEN, CHAT_ID:str = CHAT_ID) -> bool:
     """
@@ -83,4 +88,4 @@ def send_telegram_message(message:str, TOKEN:str = TOKEN, CHAT_ID:str = CHAT_ID)
 if __name__ =="__main__":
     # send_telegram_message("Start trigger...")
     # print(get_telegram_updates())
-    pass
+    print(get_telegram_chat_id())
